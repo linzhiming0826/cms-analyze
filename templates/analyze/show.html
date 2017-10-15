@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    {% include 'base_header.html' %} {% block title %}
+    <title>展示</title>{% endblock %}
+    <link href="/static/bootstrap-datetimepicker/css/bootstrap-datetimepicker.min.css" rel="stylesheet">
+    <link href="/static/datatables/css/dataTables.bootstrap.min.css" rel="stylesheet">
+    <style>
+        div.dt-buttons {
+            float: right;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container-fluid">
+        <h2>{{name}}</h2>
+        <div class="form-inline" style="margin-top:20px;">
+            <div class="form-group" id="my-form">
+                {% for param in config.params %}
+                <label for="{{param.id}}" class="control-label">{{param.desctription}}</label> {% ifequal param.type '1' %}
+                <input id="{{param.id}}" class="form-control" type="text" value="{{param.value}}"> {% endifequal %} {% ifequal param.type '2' %}
+                <input id="{{param.id}}" class="form-control" type="text" value="{{param.value}}" data-offset="{{param.offset}}"> {% endifequal %} {% ifequal param.type '3' %}
+                <select class="form-control" style="width:150px;" id="{{param.id}}">
+                        {{param.value|safe}}
+        </select>{% endifequal %}{% endfor %} </div>
+            <button id="btn-search" class="btn btn-primary">查询</button>
+        </div>
+        <ul class="nav nav-tabs" role="tablist" style="margin-top:20px;">
+            <li role="presentation" class="active"><a href="#chart" aria-controls="chart" role="tab" data-toggle="tab">图表</a></li>
+            <li role="presentation"><a href="#data" aria-controls="data" role="tab" data-toggle="tab">数据</a></li>
+        </ul>
+        <div class="tab-content" style="margin-top:10px;">
+            <div role="tabpanel" class="tab-pane active" id="chart">
+                <div id="main" style="width: 100%;height:600px;"></div>
+            </div>
+            <div role="tabpanel" class="tab-pane" id="data">
+                <table class="table table-hover" id="my-table">
+                    <thead>
+                        <tr id="my-table-thead">
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    <input type="hidden" id="source-data" value="" />
+    <input type="hidden" id="source-config" value="" />
+</body>
+{% include 'base_footer.html' %}
+<script src="/static/cms/js/csrftoken.js"></script>
+<script src="/static/bootstrap-datetimepicker/js/bootstrap-datetimepicker.min.js"></script>
+<script src="/static/bootstrap-datetimepicker/js/locales/bootstrap-datetimepicker.zh-CN.js"></script>
+<script src="/static/echarts/js/echarts.min.js"></script>
+<script src="/static/datatables/js/jquery.dataTables.min.js"></script>
+<script src="/static/datatables/js/dataTables.buttons.min.js"></script>
+<script src="/static/datatables/js/jszip.min.js"></script>
+<script src="/static/datatables/js/buttons.html5.min.js"></script>
+<script>
+    var params = "{% for param in config.params %}{% ifequal param.type '2' %}{{param.id}}|{% endifequal %}{% endfor %}";
+    var title = "{{name}}";
+</script>
+<script src="/static/cms/analyze/js/show.js?201710101645"></script>
+
+</html>

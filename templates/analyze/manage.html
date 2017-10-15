@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    {% include 'base_header.html' %} {% block title %}
+    <title>报表配置</title>{% endblock %}
+    <link rel="stylesheet" type="text/css" href="/static/jsoneditor/jsoneditor.css" />
+</head>
+
+<body>
+    <div class="container-fluid">
+        <h2>配置</h2>
+        <div class="form-inline" style="margin-top:20px;">
+            <div class="form-group">
+                <label for="sl-Names" class="control-label">名称</label>
+                <select class="form-control" style="width:350px;" id="sl-names" onchange="getInfo();">
+                        
+                </select>
+                <button id="btn-search" class="btn btn-primary" onclick="getInfo();">查询</button>
+                <button id="btn-save" class="btn btn-success" onclick="handleInfo(2);">保存</button>
+                <button id="btn-add" class="btn btn-warning" onclick="handleInfo(1);">新增</button>
+                <button id="btn-delete" class="btn btn-danger" onclick="delInfo();">删除</button>
+                <button id="btn-look" class="btn btn-info" onclick="searchResult();">查看效果</button>
+            </div>
+        </div>
+        <div class="form-group" style="margin-top:20px;">
+            <label for="sl-database" class="control-label">数据库</label>
+            <select class="form-control" style="width:100px;" id="sl-database">
+                            <option value="1">crawl</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label for="slDataBase" class="control-label">名称</label>
+            <input type="text" id="txt-name" class="form-control" style="max-width:500px;">
+        </div>
+        <div class="form-group">
+            <label for="slDataBase" class="control-label">语句</label>
+            <textarea class="form-control" style="max-width:800px;height:150px;" id="txt-query_sql"></textarea>
+        </div>
+        <div class="form-group">
+            <label for="slDataBase" class="control-label">配置<small class="text-muted">(包含搜索参数、图表、表格)</small></label>
+            <div id="editor" class="json-editor"></div>
+            <textarea class="form-control" style="max-width:800px;height:200px;" id="txt-config"></textarea>
+        </div>
+    </div>
+</body>
+{% include 'base_footer.html' %}
+<script src="/static/cms/js/template-web-4.12.1.js"></script>
+<script src="/static/cms/js/csrftoken.js"></script>
+<script id="tpl-user" type="text/html">
+    {% verbatim %} {{if result}} {{each result value key}}
+    <option value="{{value.id}}">{{value.name}}</option>
+    {{/each}} {{/if}} {% endverbatim %}
+</script>
+<script src="/static/jsoneditor/jquery.jsoneditor.min.js"></script>
+<script src="/static/cms/analyze/js/manage.js"></script>
+
+</html>

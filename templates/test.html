@@ -1,0 +1,80 @@
+<html>
+
+<head>
+    <link rel="stylesheet" type="text/css" href="/static/jsoneditor/jsoneditor.css" />
+</head>
+
+<body>
+    <div id="editor" class="json-editor"></div>
+    <textarea id="json"></textarea>
+    <button id="test" onclick="test();">测试</button>
+</body>
+
+<script src="/static/cms/js/jquery-3.2.1.min.js"></script>
+<script src="/static/jsoneditor/jquery.jsoneditor.min.js"></script>
+<script>
+    var json = {
+        "string": "foo",
+        "number": 5,
+        "array": [1, 2, 3],
+        "object": {
+            "property": "value",
+            "subobj": {
+                "arr": ["foo", "ha"],
+                "numero": 1
+            }
+        }
+    };
+
+    function printJSON() {
+        $('#json').val(JSON.stringify(json));
+    }
+
+    $(document).ready(function() {
+
+        $('#json').change(function() {
+            var val = $('#json').val();
+
+            if (val) {
+                try {
+                    json = JSON.parse(val);
+                } catch (e) {
+                    alert('Error in parsing json. ' + e);
+                }
+            } else {
+                json = {};
+            }
+
+            $('#editor').jsonEditor(json, {
+                change: function(data) {
+                    $('#json').val(JSON.stringify(data));
+                }
+            });
+        });
+        printJSON();
+        $('#editor').jsonEditor(json, {
+            change: function(data) {
+                $('#json').val(JSON.stringify(data));
+            }
+        });
+    });
+
+    function addDays(days) {
+        var nDate = new Date();
+        var millSeconds = Math.abs(nDate) + (days * 24 * 60 * 60 * 1000);
+        var rDate = new Date(millSeconds);
+        var year = rDate.getFullYear();
+        var month = rDate.getMonth() + 1;
+        if (month < 10) month = "0" + month;
+        var date = rDate.getDate();
+        if (date < 10) date = "0" + date;
+        return (year + "-" + month + "-" + date);
+    }
+
+    function test() {
+        date = addDays(-1)
+        alert(date)
+    }
+</script>
+
+</html>
