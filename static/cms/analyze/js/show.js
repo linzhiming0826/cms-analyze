@@ -296,6 +296,15 @@ function getTableHead() {
     return '';
 }
 
+//获取表格排序
+function getOrderConfig() {
+    var data = $('#source-data').val();
+    data = JSON.parse(data);
+    var config = $('#source-config').val();
+    config = JSON.parse(config);
+    return data.length > 0 ? config.data.order : [];
+}
+
 //展示方式（表格）
 function initTable() {
     //1.渲染表头
@@ -308,6 +317,7 @@ function initTable() {
     }
     if (data.length <= 0)
         return
+    var order = getOrderConfig();
     $('#my-table').DataTable({
         dom: 'Bfrtip',
         buttons: [{
@@ -321,7 +331,8 @@ function initTable() {
         info: false,
         searching: false,
         autoWidth: false,
-        data: data
+        data: data,
+        order: order
     });
 }
 
