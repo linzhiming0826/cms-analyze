@@ -22,7 +22,7 @@ class SAnalyze:
         根据id获取信息
         '''
         if id > 0:
-            sql = 'select name,`database`,query_sql,config from analyze_config where status>-1 and id=%s'
+            sql = 'select name,`database`,query_sql,config,view_type from analyze_config where status>-1 and id=%s'
             result = Dbs.get_cms().query(sql, id)
             if result:
                 return result[0]
@@ -43,18 +43,20 @@ class SAnalyze:
         '''
         if self._is_exist(data['name']):
             return
-        sql = 'insert into analyze_config(name,`database`,query_sql,config) values(%s,%s,%s,%s)'
+        sql = 'insert into analyze_config(name,`database`,query_sql,config,view_type) values(%s,%s,%s,%s,%s)'
         Dbs.get_cms().execute(sql, data['name'], data['database'],
-                              data['query_sql'], data['config'])
+                              data['query_sql'], data['config'],
+                              data['view_type'])
 
     @classmethod
     def _update_data(self, data):
         '''
         更新数据
         '''
-        sql = 'update analyze_config set name=%s,`database`=%s,query_sql=%s,config=%s where id=%s'
+        sql = 'update analyze_config set name=%s,`database`=%s,query_sql=%s,config=%s,view_type=%s where id=%s'
         Dbs.get_cms().execute(sql, data['name'], data['database'],
-                              data['query_sql'], data['config'], data['id'])
+                              data['query_sql'], data['config'],
+                              data['view_type'], data['id'])
 
     @classmethod
     def handle_info(self, data):

@@ -28,10 +28,17 @@
             <button id="btn-search" class="btn btn-primary">查询</button>
         </div>
         <ul class="nav nav-tabs" role="tablist" style="margin-top:20px;">
+            {% ifequal view_type 0 %}
             <li role="presentation" class="active"><a href="#chart" aria-controls="chart" role="tab" data-toggle="tab">图表</a></li>
             <li role="presentation"><a href="#data" aria-controls="data" role="tab" data-toggle="tab">数据</a></li>
+            {% endifequal %} {% ifequal view_type 1 %}
+            <li role="presentation" class="active"><a href="#chart" aria-controls="chart" role="tab" data-toggle="tab">图表</a></li>
+            {% endifequal %} {% ifequal view_type 2 %}
+            <li role="presentation" class="active"><a href="#data" aria-controls="data" role="tab" data-toggle="tab">数据</a></li>
+            {% endifequal %}
         </ul>
         <div class="tab-content" style="margin-top:10px;">
+            {% ifequal view_type 0 %}
             <div role="tabpanel" class="tab-pane active" id="chart">
                 <div id="main" style="width: 100%;height:600px;"></div>
             </div>
@@ -47,6 +54,24 @@
                     </tbody>
                 </table>
             </div>
+            {% endifequal %} {% ifequal view_type 1 %}
+            <div role="tabpanel" class="tab-pane active" id="chart">
+                <div id="main" style="width: 100%;height:600px;"></div>
+            </div>
+            {% endifequal %} {% ifequal view_type 2 %}
+            <div role="tabpanel" class="tab-pane active" id="data">
+                <table class="table table-hover" id="my-table">
+                    <thead>
+                        <tr id="my-table-thead">
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            {% endifequal %}
         </div>
     </div>
     <input type="hidden" id="source-data" value="" />
@@ -64,7 +89,8 @@
 <script>
     var params = "{% for param in config.params %}{% ifequal param.type '2' %}{{param.id}}|{% endifequal %}{% endfor %}";
     var title = "{{name}}";
+    var view_type = "{{view_type}}";
 </script>
-<script src="/static/cms/analyze/js/show.js?201710161334"></script>
+<script src="/static/cms/analyze/js/show.js?20171107"></script>
 
 </html>

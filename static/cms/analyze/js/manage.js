@@ -99,6 +99,7 @@ function getInfo() {
                     }
                 });
                 $('#txt-config').val(result.config);
+                $('#sl-view_type').val(result.view_type);
             }
             removeLock('btn-search', '查询');
         },
@@ -114,6 +115,7 @@ function handleInfo(type) {
     var name = $('#txt-name').val();
     var query_sql = $('#txt-query_sql').val();
     var config = $('#txt-config').val();
+    var view_type = $('#sl-view_type').val();
     var id = $('#sl-names').val();
     if (type == 1)
         id = 0
@@ -133,6 +135,7 @@ function handleInfo(type) {
             name: encodeURI(name),
             query_sql: encodeURI(query_sql),
             config: encodeURI(config),
+            view_type: view_type,
             i: Math.random()
         },
         dataType: 'json',

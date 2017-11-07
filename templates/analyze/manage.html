@@ -30,15 +30,23 @@
             </select>
         </div>
         <div class="form-group">
-            <label for="slDataBase" class="control-label">名称</label>
+            <label for="txt-name" class="control-label">名称</label>
             <input type="text" id="txt-name" class="form-control" style="max-width:500px;">
         </div>
         <div class="form-group">
-            <label for="slDataBase" class="control-label">语句</label>
+            <label for="sl-view_type" class="control-label">展示类型</label>
+            <select class="form-control" id="sl-view_type" style="width:100px;">
+                <option value="0">全部</option>
+                <option value="1">图表</option>
+                <option value="2">数据</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label for="txt-query_sql" class="control-label">语句</label>
             <textarea class="form-control" style="max-width:800px;height:150px;" id="txt-query_sql"></textarea>
         </div>
         <div class="form-group">
-            <label for="slDataBase" class="control-label">配置<small class="text-muted">(包含搜索参数、图表、表格)</small></label>
+            <label for="txt-config" class="control-label">配置<small class="text-muted">(包含搜索参数、图表、表格)</small></label>
             <div id="editor" class="json-editor"></div>
             <textarea class="form-control" style="max-width:800px;height:200px;" id="txt-config"></textarea>
         </div>
@@ -53,6 +61,6 @@
     {{/each}} {{/if}} {% endverbatim %}
 </script>
 <script src="/static/jsoneditor/jquery.jsoneditor.min.js"></script>
-<script src="/static/cms/analyze/js/manage.js"></script>
+<script src="/static/cms/analyze/js/manage.js?20171107"></script>
 
 </html>

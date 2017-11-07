@@ -196,6 +196,8 @@ function getChartData() {
 }
 //获取图表配置
 function initChart() {
+    if (view_type == 2)
+        return
     data = getChartData();
     var myChart = echarts.init(document.getElementById('main'));
     var option = {
@@ -302,13 +304,15 @@ function getOrderConfig() {
     data = JSON.parse(data);
     var config = $('#source-config').val();
     config = JSON.parse(config);
-    return data.length > 0 ? config.data.order : [];
+    return (data.length > 0 && config.data.order) ? config.data.order : [];
 }
 
 //展示方式（表格）
 function initTable() {
-    //1.渲染表头
-    //2.渲染数据部分
+    if (view_type == 1)
+        return
+        //1.渲染表头
+        //2.渲染数据部分
     var headHtml = getTableHead();
     $('#my-table-thead').html(headHtml);
     var data = getTableData();
