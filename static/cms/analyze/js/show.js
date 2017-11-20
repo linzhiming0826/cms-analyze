@@ -290,7 +290,7 @@ function getTableHead() {
             if (status && config.data.title.hasOwnProperty(key)) {
                 result += "<th>" + config.data.title[key] + "</th>"
             } else {
-                result += "<th>" + data[0][key] + "</th>"
+                result += "<th>" + key + "</th>"
             }
         }
         return result;
