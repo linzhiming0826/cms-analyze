@@ -1,10 +1,32 @@
 var id = request('id');
-$(function() {
+$(function () {
+    //初始化url上传递的参数
+    initUrlParams();
     //初始化日期输入框
     initDateInput();
     //初始化数据
     initData();
 });
+
+//获取url的参数字典
+function getUrlParamsDic() {
+    var url = location.href;
+    var paraString = url.substring(url.indexOf("?") + 1, url.length).split("&");
+    var paramsDic = {}
+    for (var i = 0; j = paraString[i]; i++) {
+        paramsDic[j.substring(0, j.indexOf("=")).toLowerCase()] = j.substring(j.indexOf("=") + 1, j.length);
+    }
+    return paramsDic
+}
+
+//初始化url上传递的参数
+function initUrlParams() {
+    paramsDic = getUrlParamsDic();
+    for (var key in paramsDic) {
+        if (key.indexOf('condition') > -1)
+            $('#' + key).val(decodeURIComponent(paramsDic[key]));
+    }
+}
 
 //初始化数据
 function initData() {
@@ -16,7 +38,7 @@ function initData() {
         type: 'GET',
         timeout: 5000,
         dataType: 'json',
-        success: function(result, textStatus, jqXHR) {
+        success: function (result, textStatus, jqXHR) {
             if (result) {
                 $("#source-data").val(JSON.stringify(result.data));
                 $("#source-config").val(JSON.stringify(result.config));
@@ -30,21 +52,16 @@ function initData() {
             initTable();
             removeLock('btn-search', '查询');
         },
-        error: function(xhr, textStatus) {
+        error: function (xhr, textStatus) {
             console.log(textStatus)
         }
     })
 }
 //获取url上面的参数
-function request(paras) {
-    var url = location.href;
-    var paraString = url.substring(url.indexOf("?") + 1, url.length).split("&");
-    var paraObj = {}
-    for (var i = 0; j = paraString[i]; i++) {
-        paraObj[j.substring(0, j.indexOf("=")).toLowerCase()] = j.substring(j.indexOf("=") + 1, j.length);
-    }
-    var returnValue = paraObj[paras.toLowerCase()];
-    if (typeof(returnValue) == "undefined") {
+function request(params) {
+    var paramsDic = getUrlParamsDic();
+    var returnValue = paramsDic[params.toLowerCase()];
+    if (typeof (returnValue) == "undefined") {
         return "";
     } else {
         return returnValue;
@@ -52,7 +69,7 @@ function request(paras) {
 }
 
 //时间的加减
-function addDays(days) {
+function addDays(days, format) {
     var nDate = new Date();
     var millSeconds = Math.abs(nDate) + (days * 24 * 60 * 60 * 1000);
     var rDate = new Date(millSeconds);
@@ -61,7 +78,28 @@ function addDays(days) {
     if (month < 10) month = "0" + month;
     var date = rDate.getDate();
     if (date < 10) date = "0" + date;
-    return (year + "-" + month + "-" + date);
+    if (format == 1) return (year + "-" + month + "-" + date)
+    var hour = rDate.getHours();
+    if (hour < 10) hour = "0" + hour;
+    var minute = rDate.getMinutes();
+    if (minute < 10) minute = "0" + minute;
+    return (year + "-" + month + "-" + date + " " + hour + ":" + minute + ":00");
+}
+
+//获取时间配置
+function getDateOptions(format) {
+    return format == 1 ? {
+        format: 'yyyy-mm-dd',
+        autoclose: true,
+        language: 'zh-CN',
+        minView: 2
+    } : {
+            format: 'yyyy-mm-dd hh:ii:ss',
+            autoclose: true,
+            language: 'zh-CN',
+            minView: 0,
+            minuteStep: 1
+        }
 }
 
 //设置文本输入框
@@ -69,33 +107,32 @@ function initDateInput() {
     //1.查找需要改变的时间id
     //2.检查是否动态配置时间
     //3.进行时间控件的设置
-    var ids = params.split('|');
+    var ids = dateParams.split('|');
     for (var i = 0; i < ids.length; i++) {
         if (ids[i].length > 0) {
+            var format = $('#' + ids[i]).attr('data-format');
+            format = format ? format : 1;
             var offset = $('#' + ids[i]).attr('data-offset');
-            if (offset != undefined && offset.length > 0) {
-                var value = addDays(offset);
+            var value = $('#' + ids[i]).val();
+            if (offset != undefined && offset.length > 0 && value.length <= 0) {
+                value = addDays(offset, format);
                 $('#' + ids[i]).val(value);
             }
-            $('#' + ids[i]).datetimepicker({
-                format: 'yyyy-mm-dd',
-                autoclose: true,
-                language: 'zh-CN',
-                minView: 2
-            });
+            options = getDateOptions(format);
+            $('#' + ids[i]).datetimepicker(options);
         }
     }
 }
 
 //注册搜索事件
-$('#btn-search').click(function() {
+$('#btn-search').click(function () {
     initData();
 });
 
 //获取请求参数
 function getParams() {
     var params = ['search_id=' + id]
-    $('#my-form').children('input,select,textarea').each(function() {
+    $('#my-form').find('input,select,textarea').each(function () {
         _id = $(this).attr('id');
         value = $(this).val();
         params.push(_id + "=" + value);
@@ -311,8 +348,8 @@ function getOrderConfig() {
 function initTable() {
     if (view_type == 1)
         return
-        //1.渲染表头
-        //2.渲染数据部分
+    //1.渲染表头
+    //2.渲染数据部分
     var headHtml = getTableHead();
     $('#my-table-thead').html(headHtml);
     var data = getTableData();

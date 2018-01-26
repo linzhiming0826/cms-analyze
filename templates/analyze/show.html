@@ -16,29 +16,39 @@
 <body>
     <div class="container-fluid">
         <h2>{{name}}</h2>
-        <div class="form-inline" style="margin-top:20px;">
-            <div class="form-group" id="my-form">
-                {% for param in config.params %}
-                <label for="{{param.id}}" class="control-label">{{param.desctription}}</label> {% ifequal param.type '1' %}
-                <input id="{{param.id}}" class="form-control" type="text" value="{{param.value}}"> {% endifequal %} {% ifequal param.type '2' %}
-                <input id="{{param.id}}" class="form-control" type="text" value="{{param.value}}" data-offset="{{param.offset}}"> {% endifequal %} {% ifequal param.type '3' %}
-                <select class="form-control" style="width:150px;" id="{{param.id}}">
-                        {{param.value|safe}}
-        </select>{% endifequal %}{% endfor %} </div>
+        <div class="form-inline" id="my-form" style="margin-top:20px;">
+            {% for param in config.params %}
+            <div class="form-group">
+                <label for="{{param.id}}" class="control-label">{{param.desctription}}</label> {% if param.type == '1' %}
+                <input id="{{param.id}}" class="form-control" type="text" {% if param.width %}style="width:{{param.width}};" {% endif %}
+                    value="{% if param.id not in request.GET %}{{param.value}}{% endif %}"> {% elif param.type == '2' %}
+                <input id="{{param.id}}" class="form-control" type="text" {% if param.width %}style="width:{{param.width}};" {% endif %}
+                    value="{% if param.id not in request.GET and param.value %}{{param.value}}{% endif %}" data-offset="{{param.offset}}" data-format="{{param.format}}"> {% elif param.type == '3' %}
+                <select class="form-control" {% if param.width %}style="width:{{param.width}};" {% endif %} id="{{param.id}}">
+                    {{param.value|safe}}
+                </select>{% endif %}</div>{% endfor %}
             <button id="btn-search" class="btn btn-primary">查询</button>
         </div>
         <ul class="nav nav-tabs" role="tablist" style="margin-top:20px;">
-            {% ifequal view_type 0 %}
-            <li role="presentation" class="active"><a href="#chart" aria-controls="chart" role="tab" data-toggle="tab">图表</a></li>
-            <li role="presentation"><a href="#data" aria-controls="data" role="tab" data-toggle="tab">数据</a></li>
-            {% endifequal %} {% ifequal view_type 1 %}
-            <li role="presentation" class="active"><a href="#chart" aria-controls="chart" role="tab" data-toggle="tab">图表</a></li>
-            {% endifequal %} {% ifequal view_type 2 %}
-            <li role="presentation" class="active"><a href="#data" aria-controls="data" role="tab" data-toggle="tab">数据</a></li>
-            {% endifequal %}
+            {% if view_type == 0 %}
+            <li role="presentation" class="active">
+                <a href="#chart" aria-controls="chart" role="tab" data-toggle="tab">图表</a>
+            </li>
+            <li role="presentation">
+                <a href="#data" aria-controls="data" role="tab" data-toggle="tab">数据</a>
+            </li>
+            {% elif view_type == 1 %}
+            <li role="presentation" class="active">
+                <a href="#chart" aria-controls="chart" role="tab" data-toggle="tab">图表</a>
+            </li>
+            {% elif view_type == 2 %}
+            <li role="presentation" class="active">
+                <a href="#data" aria-controls="data" role="tab" data-toggle="tab">数据</a>
+            </li>
+            {% endif %}
         </ul>
         <div class="tab-content" style="margin-top:10px;">
-            {% ifequal view_type 0 %}
+            {% if view_type == 0 %}
             <div role="tabpanel" class="tab-pane active" id="chart">
                 <div id="main" style="width: 100%;height:600px;"></div>
             </div>
@@ -54,11 +64,11 @@
                     </tbody>
                 </table>
             </div>
-            {% endifequal %} {% ifequal view_type 1 %}
+            {% elif view_type == 1 %}
             <div role="tabpanel" class="tab-pane active" id="chart">
                 <div id="main" style="width: 100%;height:600px;"></div>
             </div>
-            {% endifequal %} {% ifequal view_type 2 %}
+            {% elif view_type == 2 %}
             <div role="tabpanel" class="tab-pane active" id="data">
                 <table class="table table-hover" id="my-table">
                     <thead>
@@ -71,7 +81,7 @@
                     </tbody>
                 </table>
             </div>
-            {% endifequal %}
+            {% endif %}
         </div>
     </div>
     <input type="hidden" id="source-data" value="" />
@@ -87,10 +97,11 @@
 <script src="/static/datatables/js/jszip.min.js"></script>
 <script src="/static/datatables/js/buttons.html5.min.js"></script>
 <script>
-    var params = "{% for param in config.params %}{% ifequal param.type '2' %}{{param.id}}|{% endifequal %}{% endfor %}";
+    var dateParams = "{% for param in config.params %}{% ifequal param.type '2' %}{{param.id}}|{% endifequal %}{% endfor %}";
     var title = "{{name}}";
     var view_type = "{{view_type}}";
+    var paramsCount = "{% for param in config.params %}{% if forloop.last %}{{forloop.counter}}{% endif %}{% endfor %}";
 </script>
-<script src="/static/cms/analyze/js/show.js?20171115"></script>
+<script src="/static/cms/analyze/js/show.js?201701261619"></script>
 
 </html>

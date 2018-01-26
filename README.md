@@ -48,27 +48,32 @@
             "type": "3",//1.文本框 2.时间框 3.下拉框
             "id": "condition3",//id 对应着sql语句中的参数名称
             "value": "<option value=\"\">全部</option><option value=\"北京/天津\">北京/天津</option><option value=\"上海/杭州\">上海/杭州</option><option value=\"成都/重庆\">成都/重庆</option><option value=\"广州/深圳\">广州/深圳</option><option value=\"港澳台\">港澳台</option><option value=\"国内其他\">国内其他</option><option value=\"海外\">海外</option>",//文本框的值，支持html
-            "desctription": "出发地："//控件说明、会出现在文本框前面
+            "desctription": "出发地：",//控件说明、会出现在文本框前面
+            "width":"100px" //控件的宽度
         },
         {
             "type": "1",
             "id": "condition4",
             "value": "三亚",
-            "desctription": "目的地："
+            "desctription": "目的地：",
+            "width":"100px"
         },
         {
             "type": "2",
             "id": "condition1",
             "value": "",
             "desctription": "日期：",
-            "offset": "-8" //偏移量，当类型为2时，此参数将拥有绝对的优先级。默认为与当前时间的偏差（天），可为正数负数
+            "offset": "-8", //偏移量，当类型为2时，此参数将拥有绝对的优先级。默认为与当前时间的偏差（天），可为正数负数
+            "width":"100px",
+            "format":"1" //格式化类型，目前支持两种类型：1.yyyy-mm-dd 2.yyyy-mm-dd hh:ii:ss
         },
         {
             "type": "2",
             "id": "condition2",
             "value": "",
             "desctription": "~",
-            "offset": "-1"
+            "offset": "-1",
+            "width":"100px"
         }
     ],
     "data": {
@@ -118,6 +123,14 @@
     }
 }
 
+### 接收url参数赋值功能
+
+随着业务需求的增加，会发现动态的搜索赋值需求越来越强烈，而在url上进行搜索值的传递，恰好很完美的解决了这种情况。
+
+目前的逻辑是：接口url的参数进行设置,只接收condition开头的参数，正好对于查询参数的id，比如：condition1、condition2...等
+
+示例请求地址：http://***:8000/analyze/show?id=2&condition1=上海&condition=2018-01-26
+
 ### 部分功能截图
 
 页面布局很后端程序员化，比较粗矿，但是简单好用。各位看官多多担待。
@@ -138,5 +151,7 @@
 ### 更新记录
 
 2017.11.7 新增展示类型的配置选项（可以单独查看图表、数据或者图表数据）
+
+2018.1.26 新增日期格式的配置、搜索框的宽度配置、初始化搜索框值可以从url接收。
 
 ### THE END
