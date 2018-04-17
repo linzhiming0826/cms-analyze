@@ -17,13 +17,14 @@ class SAnalyze:
         return Dbs.get_cms().query(sql)
 
     @classmethod
-    def get_info(self, id):
+    def get_info(self, search_id):
         '''
         根据id获取信息
         '''
-        if id > 0:
+        search_id = int(search_id)
+        if search_id > 0:
             sql = 'select name,`database`,query_sql,config,view_type from analyze_config where status>-1 and id=%s'
-            result = Dbs.get_cms().query(sql, id)
+            result = Dbs.get_cms().query(sql, search_id)
             if result:
                 return result[0]
 
@@ -45,8 +46,8 @@ class SAnalyze:
             return
         sql = 'insert into analyze_config(name,`database`,query_sql,config,view_type) values(%s,%s,%s,%s,%s)'
         Dbs.get_cms().execute(sql, data['name'], data['database'],
-                              data['query_sql'], data['config'],
-                              data['view_type'])
+                               data['query_sql'], data['config'],
+                               data['view_type'])
 
     @classmethod
     def _update_data(self, data):
@@ -55,18 +56,18 @@ class SAnalyze:
         '''
         sql = 'update analyze_config set name=%s,`database`=%s,query_sql=%s,config=%s,view_type=%s where id=%s'
         Dbs.get_cms().execute(sql, data['name'], data['database'],
-                              data['query_sql'], data['config'],
-                              data['view_type'], data['id'])
+                               data['query_sql'], data['config'],
+                               data['view_type'], data['id'])
 
     @classmethod
     def handle_info(self, data):
         '''
         新增或者删除数据
         '''
-        data['name'] = urllib.unquote(data['name'].encode('utf-8'))
-        data['query_sql'] = urllib.unquote(data['query_sql'].encode('utf-8'))
-        data['config'] = urllib.unquote(
-            data['config'].encode('utf-8')).replace('\n', '').replace('\t', '')
+        data['name'] = urllib.parse.unquote(data['name'])
+        data['query_sql'] = urllib.parse.unquote(data['query_sql'])
+        data['config'] = urllib.parse.unquote(
+            data['config']).replace('\n', '').replace('\t', '')
         self._update_data(data) if int(
             data['id']) > 0 else self._add_data(data)
 
@@ -79,11 +80,11 @@ class SAnalyze:
         Dbs.get_cms().execute(sql, id)
 
     @classmethod
-    def get_json_info(self, id):
+    def get_json_info(self, search_id):
         '''
         根据id获取信息
         '''
-        info = self.get_info(id)
+        info = self.get_info(search_id)
         if info:
             info['config'] = demjson.decode(info['config'])
         return info
@@ -102,19 +103,22 @@ class SAnalyze:
         处理sql语句，替换可空的参数（如果参数真的为空）
         '''
         can_empty_params = self._get_can_empty_params(query_sql)
+        keys = []
         for key, value in dic.items():
             param_config = '@' + key
             for can_empty_param in can_empty_params:
                 if not value and param_config in can_empty_param:
                     # 值为空则进行屏蔽
                     query_sql = query_sql.replace(can_empty_param, '')
-                    # 删除参数化的值
-                    dic.pop(key)
+                    keys.append(key)
             # 如果是数字转成int
             if Util.is_num(value):
                 dic[key] = int(value)
             # 将参数进行参数化
             query_sql = query_sql.replace(param_config, '%s')
+        # 删除参数化的值
+        for key in keys:
+            dic.pop(key)
         # 去除可空参数配置
         query_sql = query_sql.replace('{canEmpty}', '').replace(
             '{endcanEmpty}', '')
@@ -127,8 +131,8 @@ class SAnalyze:
         '''
         获取数据
         '''
-        id = dic.get('search_id', 0)
-        info = self.get_info(id)
+        search_id = dic.get('search_id', 0)
+        info = self.get_info(search_id)
         if info:
             database = DbEnum(int(info['database']))
             query_sql, params = self._handle_sql_and_params(info['query_sql'],

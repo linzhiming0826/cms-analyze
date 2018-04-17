@@ -25,4 +25,4 @@ class Util:
 
 
 if __name__ == '__main__':
-    print Util.get_num('-100')
+    print(Util.get_num('-100'))

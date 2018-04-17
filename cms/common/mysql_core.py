@@ -1,8 +1,6 @@
-import copy
-import MySQLdb.constants
-import MySQLdb.converters
-import MySQLdb.cursors
-import itertools
+import pymysql.constants
+import pymysql.converters
+import pymysql.cursors
 import logging
 import time
 from collections import OrderedDict
@@ -20,7 +18,6 @@ class MySQLCore(object):
         self.max_idle_time = max_idle_time
 
         args = dict(
-            conv=CONVERSIONS,
             use_unicode=True,
             charset="utf8",
             db=database,
@@ -69,7 +66,7 @@ class MySQLCore(object):
             from DBUtils import PooledDB
 
             pool_con = PooledDB.PooledDB(
-                creator=MySQLdb,
+                creator=pymysql,
                 mincached=1,
                 maxcached=10,
                 maxshared=10,
@@ -80,13 +77,13 @@ class MySQLCore(object):
             self._db = pool_con.connection()
             self._db.cursor().connection.autocommit(True)
         except:
-            self._db = MySQLdb.connect(**self._db_args)
+            self._db = pymysql.connect(**self._db_args)
             self._db.autocommit(True)
 
     def iter(self, query, *parameters):
         """Returns an iterator for the given query and parameters."""
         self._ensure_connected()
-        cursor = MySQLdb.cursors.SSCursor(self._db)
+        cursor = pymysql.cursors.SSCursor(self._db)
         try:
             self._execute(cursor, query, parameters)
             column_names = [d[0] for d in cursor.description]
@@ -101,7 +98,7 @@ class MySQLCore(object):
         try:
             self._execute(cursor, query, parameters)
             column_names = [d[0] for d in cursor.description]
-            return [Row(itertools.izip(column_names, row)) for row in cursor]
+            return [Row(zip(column_names, row)) for row in cursor]
         finally:
             cursor.close()
 
@@ -177,8 +174,8 @@ class MySQLCore(object):
         # you try to perform a query and it fails.  Protect against this
         # case by preemptively closing and reopening the connection
         # if it has been idle for too long (7 hours by default).
-        if (self._db is None or
-            (time.time() - self._last_use_time > self.max_idle_time)):
+        if not self._db or (
+                time.time() - self._last_use_time > self.max_idle_time):
             self.reconnect()
         self._last_use_time = time.time()
 
@@ -203,20 +200,3 @@ class Row(OrderedDict):
             return self[name]
         except KeyError:
             raise AttributeError(name)
-
-
-# Fix the access conversions to properly recognize unicode/binary
-FIELD_TYPE = MySQLdb.constants.FIELD_TYPE
-FLAG = MySQLdb.constants.FLAG
-CONVERSIONS = copy.copy(MySQLdb.converters.conversions)
-
-field_types = [FIELD_TYPE.BLOB, FIELD_TYPE.STRING, FIELD_TYPE.VAR_STRING]
-if 'VARCHAR' in vars(FIELD_TYPE):
-    field_types.append(FIELD_TYPE.VARCHAR)
-
-for field_type in field_types:
-    CONVERSIONS[field_type] = [(FLAG.BINARY, str)] + CONVERSIONS[field_type]
-
-# Alias some common MySQL exceptions
-IntegrityError = MySQLdb.IntegrityError
-OperationalError = MySQLdb.OperationalError

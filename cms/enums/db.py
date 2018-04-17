@@ -9,4 +9,4 @@ class DbEnum(Enum):
 
 
 if __name__ == '__main__':
-    print DbEnum(1)
+    print(DbEnum(1))
