@@ -1,4 +1,4 @@
 enum34==1.1.6
-Django==1.11.2
+Django==1.11.23
 demjson==2.2.4
 pymysql==0.8.0
